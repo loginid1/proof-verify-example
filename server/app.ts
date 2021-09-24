@@ -4,7 +4,7 @@ import { tokenRouter } from "./routes/";
 
 const app = express();
 
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 3001);
 app.set("env", process.env.NODE_ENV || "development");
 
 app.use(express.json());

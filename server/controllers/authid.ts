@@ -15,6 +15,41 @@ const internalErrorResponse = (res: Response) => {
   return res.status(500).json({ message: "Internal Server Error" });
 };
 
+/*
+ * Creates a user without credentials.
+ */
+export const createUser = async (req: Request, res: Response) => {
+  const { username } = req.body;
+
+  const url = `${env.baseUrl}/api/native/manage/users`;
+
+  const serviceToken = loginid.generateServiceToken("users.create");
+
+  const requestPayload = { username };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...postHeaders,
+        Authorization: `Bearer ${serviceToken}`,
+        "X-Client-ID": env.loginidBackendClientId,
+      },
+      body: JSON.stringify(requestPayload),
+    });
+
+    const payload = await response.json();
+
+    return res.status(response.status).json(payload);
+  } catch (e) {
+    console.log(e.message);
+    internalErrorResponse(res);
+  }
+};
+
+/*
+ * Initiate adding a new AuthID credential.
+ */
 export const authIdInit = async (req: Request, res: Response) => {
   const {
     username,

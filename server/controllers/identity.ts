@@ -50,7 +50,7 @@ export const createUser = async (req: Request, res: Response) => {
 /*
  * Initiate adding a new AuthID credential.
  */
-export const authIdInit = async (req: Request, res: Response) => {
+export const proofInit = async (req: Request, res: Response) => {
   const {
     username,
     user_id: userId,
@@ -61,7 +61,7 @@ export const authIdInit = async (req: Request, res: Response) => {
 
   const serviceToken = loginid.generateServiceToken("credentials.force_add");
 
-  const initPayload = {
+  const requestPayload = {
     client_id: env.loginidBackendClientId,
     username,
     user_id: userId,
@@ -76,7 +76,43 @@ export const authIdInit = async (req: Request, res: Response) => {
     const response = await fetch(url, {
       method: "POST",
       headers: { ...postHeaders, Authorization: `Bearer ${serviceToken}` },
-      body: JSON.stringify(initPayload),
+      body: JSON.stringify(requestPayload),
+    });
+
+    const payload = await response.json();
+
+    return res.status(response.status).json(payload);
+  } catch (e) {
+    console.log(e.message);
+    internalErrorResponse(res);
+  }
+};
+
+/*
+ * Complete adding a new AuthID credential.
+ */
+export const proofComplete = async (req: Request, res: Response) => {
+  const {
+    username,
+    user_id: userId,
+    credential_uuid: credentialUUID,
+  } = req.body;
+
+  const url = `${env.baseUrl}/api/native/credentials/authid/complete`;
+
+  const requestPayload = {
+    client_id: env.loginidBackendClientId,
+    username,
+    user_id: userId,
+    credential_uuid: credentialUUID,
+    activate_credential: true,
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: postHeaders,
+      body: JSON.stringify(requestPayload),
     });
 
     const payload = await response.json();

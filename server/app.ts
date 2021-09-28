@@ -1,6 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import { tokenRouter, authIdRouter } from "./routes/";
+import { tokenRouter, identityRouter } from "./routes/";
 
 const app = express();
 
@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser("secret"));
 
 app.use("/token", tokenRouter);
-app.use("/authid", authIdRouter);
+app.use("/identity", identityRouter);
 
 app.listen(app.get("port"), () => {
   console.log(`Listening to ${app.get("port")}`);

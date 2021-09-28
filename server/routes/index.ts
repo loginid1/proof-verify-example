@@ -1,3 +1,4 @@
 import tokenRouter from "./token";
+import authIdRouter from "./authid";
 
-export { tokenRouter };
+export { tokenRouter, authIdRouter };

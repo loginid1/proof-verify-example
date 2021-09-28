@@ -5,13 +5,28 @@ interface Props {
   placeholder: string;
   id: string;
   value: string;
+  onChange: React.ChangeEventHandler;
+  isFilled?: boolean;
 }
 
-const Input: React.FC<Props> = ({ placeholder, id, children, value }) => {
+const Input: React.FC<Props> = ({
+  placeholder,
+  id,
+  children,
+  value,
+  onChange,
+  isFilled = false,
+}) => {
   return (
     <div>
       <Label htmlFor={id}>{children}</Label>
-      <StyledInput id={id} placeholder={placeholder} value={value} />
+      <StyledInput
+        isFilled={isFilled}
+        onChange={onChange}
+        id={id}
+        placeholder={placeholder}
+        value={value}
+      />
     </div>
   );
 };

@@ -4,14 +4,14 @@ interface Options {
   body?: { [key: string]: any };
 }
 
-const request = async (url: string, options: Options) => {
+const request = async (url: string, options: Options = {}) => {
   const { method = "POST", headers = {}, body = {} } = options;
 
   try {
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json", ...headers },
-      body: JSON.stringify(body),
+      ...(method !== "GET" && { body: JSON.stringify(body) }),
     });
 
     if (response.status === 204) {

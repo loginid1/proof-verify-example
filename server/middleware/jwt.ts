@@ -56,11 +56,7 @@ export const verifyLoginIdJWT = async (
   }
 };
 
-export const authorization = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const verifyUser = (req: Request, res: Response, next: NextFunction) => {
   const token = req.signedCookies?.jwt;
 
   if (!token) {
@@ -72,8 +68,9 @@ export const authorization = (
   try {
     const data = jsonwebtoken.verify(token, env.localTokenSecret) as UserJWT;
 
-    req.user.username = data.username;
-    req.user.id = data.id;
+    const user = { username: data.username, id: data.id };
+
+    req.user = user;
 
     next();
   } catch (e) {

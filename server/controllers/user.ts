@@ -35,6 +35,7 @@ export const logout = (_: Request, res: Response) => {
   return res.clearCookie("jwt").status(204).end();
 };
 
-export const authorize = (_: Request, res: Response) => {
-  return res.status(204).end();
+export const authorize = (req: Request, res: Response) => {
+  const { user } = req;
+  return res.status(200).json(user);
 };

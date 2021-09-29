@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Register from "./pages/Register/";
 import Login from "./pages/Login/";
 import Home from "./pages/Home/";
+import Private from "./components/Private/";
 import Theme from "./theme/";
 
 const App = function () {
@@ -25,9 +26,9 @@ const App = function () {
           <Route path="/login" exact>
             <Login username={username} handleUsername={handleUsername} />
           </Route>
-          <Route path="/home" exact>
+          <Private path="/home">
             <Home username={username} />
-          </Route>
+          </Private>
         </Switch>
       </Router>
     </Theme>

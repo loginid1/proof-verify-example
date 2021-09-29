@@ -6,8 +6,9 @@ import Link from "../../components/Link/";
 import Button from "../../components/Button/";
 import Backdrop from "../../components/Backdrop/";
 import { Iframe } from "../../components/Iframe/style";
-import { PageNames } from "../../enums/";
-import Identity from "../../services/identity";
+import { PageNames } from "../../enums/index";
+import Token from "../../services/token";
+import LoginID from "../../services/loginid";
 import { Form } from "../style";
 
 const Login = () => {
@@ -24,55 +25,56 @@ const Login = () => {
   };
 
   /*
-   * Register a user (no credential) and then initalize and finalize the proof flow
+   * Initalize and finalize the verify flow
    */
-  const handleRegisterAndProof = async () => {
+  const handleAuthenticate = async () => {
     try {
       setIsLoading(true);
-      //Create a user
-      await Identity.createUser(username);
 
-      //initalize proof
+      const serviceToken = await Token.createToken("auth.login");
+
+      //initalize verify
       const {
-        iframe_url: iframeUrl,
         credential_uuid: credentialUUID,
-      } = await Identity.init(username);
+        iframe_url: iframeUrl,
+      } = await LoginID.authenticateWithVerifyInit(username, serviceToken);
 
       setIframeUrl(iframeUrl);
 
-      //controller is used to remove event listener when no longer in use
-      const controller = new AbortController();
       //create a postMessage event and wait for event to resolve or reject
       await new Promise((resolve, reject) => {
         window.addEventListener(
           "message",
           (event) => {
+            const { pageName } = event.data;
+            const validPageNames = [
+              PageNames.QA_CODE_PAGE,
+              PageNames.VIDEO_DEVICE_NOT_FOUND,
+            ];
+
             if (event.data.success) {
               resolve(event.data);
               setIframeUrl("");
-              controller.abort();
-            } else {
-              const { pageName } = event.data;
-              const validPageNames = [
-                PageNames.QA_CODE_PAGE,
-                PageNames.VIDEO_DEVICE_NOT_FOUND,
-              ];
-
-              if (!validPageNames.includes(pageName)) {
-                reject(event.data);
-                setIframeUrl("");
-                controller.abort();
-              }
+            } else if (!validPageNames.includes(pageName)) {
+              console.log(pageName);
+              reject(event.data);
+              setIframeUrl("");
             }
           },
-          { capture: false, signal: controller.signal }
+          { capture: false }
         );
       });
 
-      const result = await Identity.complete({ username, credentialUUID });
-      console.log(result);
+      //finalize verify
+      const { jwt } = await LoginID.authenticateWithVerifyComplete(
+        username,
+        credentialUUID
+      );
+
+      //validate jwt and start user session
 
       setIsLoading(false);
+      console.log(jwt);
     } catch (error) {
       setIsLoading(false);
       console.log(error);
@@ -93,7 +95,7 @@ const Login = () => {
           Email
         </Input>
         <Link url="/register">Need to register?</Link>
-        <Button onClick={handleRegisterAndProof}>Login</Button>
+        <Button onClick={handleAuthenticate}>Login</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} />}
       <Backdrop display={isLoading} />

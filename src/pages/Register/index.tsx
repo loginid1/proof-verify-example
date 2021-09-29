@@ -10,11 +10,6 @@ import { PageNames } from "../../enums/";
 import Identity from "../../services/identity";
 import { Form } from "../style";
 
-export enum Flows {
-  REGISTER,
-  LOGIN,
-}
-
 const Register = () => {
   const [username, setUsername] = useState("");
   const [iframeUrl, setIframeUrl] = useState("");
@@ -37,6 +32,15 @@ const Register = () => {
       //Create a user
       await Identity.createUser(username);
 
+      handleProof();
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+    }
+  };
+
+  const handleProof = async () => {
+    try {
       //initalize proof
       const {
         iframe_url: iframeUrl,
@@ -74,8 +78,8 @@ const Register = () => {
         );
       });
 
-      const result = await Identity.complete({ username, credentialUUID });
-      console.log(result);
+      //finalize proof
+      await Identity.complete({ username, credentialUUID });
 
       setIsLoading(false);
     } catch (error) {
@@ -99,6 +103,7 @@ const Register = () => {
         </Input>
         <Link url="/login">Want to login?</Link>
         <Button onClick={handleRegisterAndProof}>Register</Button>
+        <Button onClick={handleProof}>Proof</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} />}
       <Backdrop display={isLoading} />

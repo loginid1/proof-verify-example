@@ -1,10 +1,5 @@
 import { Router } from "express";
-import {
-  createUser,
-  deleteUser,
-  proofInit,
-  proofComplete,
-} from "../controllers/identity";
+import { createUser, proofInit, proofComplete } from "../controllers/identity";
 
 const router = Router();
 

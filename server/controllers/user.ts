@@ -1,18 +1,6 @@
 import { Request, Response } from "express";
 import UsersDB from "../database/Users";
-import jsonwebtoken from "jsonwebtoken";
-import env from "../utils/env";
-import { UserJWT } from "../middleware/jwt";
-
-export const setJWTCookie = (res: Response, user: UserJWT) => {
-  const token = jsonwebtoken.sign(user, env.localTokenSecret);
-  res.cookie("jwt", token, {
-    httpOnly: true,
-    signed: true,
-    //in producation
-    //secure: true
-  });
-};
+import { setJWTCookie } from "../middleware/jwt";
 
 export const register = (req: Request, res: Response) => {
   try {
@@ -41,4 +29,12 @@ export const authenticate = (req: Request, res: Response) => {
 
   setJWTCookie(res, user);
   return res.status(200).json(user);
+};
+
+export const logout = (_: Request, res: Response) => {
+  return res.clearCookie("jwt").status(204).end();
+};
+
+export const authorize = (_: Request, res: Response) => {
+  return res.status(204).end();
 };

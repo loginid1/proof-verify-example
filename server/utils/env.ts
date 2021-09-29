@@ -7,6 +7,7 @@ const env = {
   baseUrl: process.env.REACT_APP_BASE_URL || "",
   //you can use a public key instead
   localTokenSecret: "mysecrect",
+  nodeEnvironment: process.env.NODE_ENV || "development",
 };
 
 export default env;

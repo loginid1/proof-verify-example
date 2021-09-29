@@ -14,6 +14,10 @@ const request = async (url: string, options: Options) => {
       body: JSON.stringify(body),
     });
 
+    if (response.status === 204) {
+      return { message: "OK" };
+    }
+
     const data = await response.json();
 
     if (!response.ok) {

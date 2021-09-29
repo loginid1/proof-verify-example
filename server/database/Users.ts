@@ -2,12 +2,12 @@ import Low, { LowdbSync } from "lowdb";
 import LowFile from "lowdb/adapters/FileSync";
 import * as uuid from "uuid";
 
-interface User {
+export interface User {
   username: string;
   id: string;
 }
 
-interface Users {
+export interface Users {
   users: User[];
 }
 

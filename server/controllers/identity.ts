@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { LoginId, LoginIdManagement } from "@loginid/node-sdk";
 import fetch from "node-fetch";
 import env from "../utils/env";
-import { setJWTCookie } from "./user";
+import { setJWTCookie } from "../middleware/jwt";
 import UsersDB from "../database/Users";
 
 const loginid = new LoginId(

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jsonwebtoken from "jsonwebtoken";
+import { User } from "../database/Users";
 import { LoginId } from "@loginid/node-sdk";
 import env from "../utils/env";
 
@@ -15,6 +16,7 @@ declare module "express-serve-static-core" {
 export interface UserJWT {
   id: string;
   username: string;
+  iat: number;
 }
 
 const loginid = new LoginId(
@@ -22,6 +24,17 @@ const loginid = new LoginId(
   env.privateKey,
   env.baseUrl
 );
+
+export const setJWTCookie = (res: Response, user: User) => {
+  const token = jsonwebtoken.sign(user, env.localTokenSecret);
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    signed: true,
+    sameSite: true,
+    maxAge: 24 * 60 * 60 * 1000, //1 day
+    secure: env.nodeEnvironment === "production",
+  });
+};
 
 export const verifyLoginIdJWT = async (
   req: Request,

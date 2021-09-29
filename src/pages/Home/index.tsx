@@ -3,6 +3,7 @@ import BaseView from "../../components/BaseView/";
 import Title from "../../components/Title/";
 import happyFaceUrl from "../../images/happy-face.svg";
 import Button from "../../components/Button/";
+import User from "../../services/user";
 import { Wrapper, Img } from "./style";
 
 interface Props {
@@ -12,7 +13,8 @@ interface Props {
 const Home = ({ username }: Props) => {
   const history = useHistory();
 
-  const handleLogOut = () => {
+  const handleLogOut = async () => {
+    await User.logout();
     history.push("/login");
   };
 

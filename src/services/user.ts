@@ -10,6 +10,14 @@ export const loginUser = async (jwt: string, username: string) => {
   return await request(`${baseUrl}/login`, { body: { jwt, username } });
 };
 
-const obj = { registerUser, loginUser };
+export const logout = async () => {
+  return await request(`${baseUrl}/logout`, {});
+};
+
+export const isAuthorized = async () => {
+  ("");
+};
+
+const obj = { registerUser, loginUser, logout };
 
 export default obj;

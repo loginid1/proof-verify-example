@@ -10,7 +10,12 @@ import { PageNames } from "../../enums/";
 import Identity from "../../services/identity";
 import { Form } from "../style";
 
-const Login = () => {
+export enum Flows {
+  REGISTER,
+  LOGIN,
+}
+
+const Register = () => {
   const [username, setUsername] = useState("");
   const [iframeUrl, setIframeUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -82,7 +87,7 @@ const Login = () => {
   return (
     <BaseView>
       <Form onSubmit={handleNoSubmit}>
-        <Title>Login</Title>
+        <Title>Register</Title>
         <Input
           id="email"
           placeholder="joe@email.com"
@@ -92,8 +97,8 @@ const Login = () => {
         >
           Email
         </Input>
-        <Link url="/register">Need to register?</Link>
-        <Button onClick={handleRegisterAndProof}>Login</Button>
+        <Link url="/login">Want to login?</Link>
+        <Button onClick={handleRegisterAndProof}>Register</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} />}
       <Backdrop display={isLoading} />
@@ -101,4 +106,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Login, { Flows } from "./pages/Login/";
+import Register from "./pages/Register/";
+import Login from "./pages/Login/";
 import Theme from "./theme/";
 
 const App = function () {
@@ -8,10 +9,13 @@ const App = function () {
       <Router>
         <Switch>
           <Route path="/" exact>
-            <Login type={Flows.LOGIN} />
+            <Register />
           </Route>
           <Route path="/register" exact>
-            <Login type={Flows.REGISTER} />
+            <Register />
+          </Route>
+          <Route path="/login" exact>
+            <Login />
           </Route>
         </Switch>
       </Router>

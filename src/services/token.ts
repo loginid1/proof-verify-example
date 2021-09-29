@@ -10,4 +10,10 @@ export const createToken = async (scope: string) => {
   return serviceToken;
 };
 
-export default { createToken };
+export const verifyToken = async (jwt: string, username: string) => {
+  return await request(`${baseUrl}/verify`, { body: { jwt, username } });
+};
+
+const obj = { createToken };
+
+export default obj;

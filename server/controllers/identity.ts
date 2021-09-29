@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { LoginId, LoginIdManagement } from "@loginid/node-sdk";
 import fetch from "node-fetch";
 import env from "../utils/env";
+import { setJWTCookie } from "./user";
+import UsersDB from "../database/Users";
 
 const loginid = new LoginId(
   env.loginidBackendClientId,
@@ -109,6 +111,16 @@ export const proofComplete = async (req: Request, res: Response) => {
     });
 
     const payload = await response.json();
+
+    try {
+      if (response.ok) {
+        const db = new UsersDB();
+        const user = db.createUser(username);
+        setJWTCookie(res, user);
+      }
+    } catch (e) {
+      console.log(e.message);
+    }
 
     return res.status(response.status).json(payload);
   } catch (e) {

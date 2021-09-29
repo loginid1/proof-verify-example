@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import BaseView from "../../components/BaseView/";
 import Title from "../../components/Title/";
 import Input from "../../components/Input/";
@@ -9,19 +10,21 @@ import { Iframe } from "../../components/Iframe/style";
 import { PageNames } from "../../enums/index";
 import Token from "../../services/token";
 import LoginID from "../../services/loginid";
+import User from "../../services/user";
 import { Form } from "../style";
 
-const Login = () => {
-  const [username, setUsername] = useState("");
+interface Props {
+  username: string;
+  handleUsername: React.ChangeEventHandler;
+}
+
+const Login = ({ username, handleUsername }: Props) => {
+  const history = useHistory();
   const [iframeUrl, setIframeUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNoSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  };
-
-  const handleUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
   };
 
   /*
@@ -72,9 +75,10 @@ const Login = () => {
       );
 
       //validate jwt and start user session
+      await User.loginUser(jwt, username);
 
-      setIsLoading(false);
-      console.log(jwt);
+      //go to home
+      history.push("/home");
     } catch (error) {
       setIsLoading(false);
       console.log(error);

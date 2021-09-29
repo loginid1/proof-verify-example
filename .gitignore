@@ -2,6 +2,7 @@
 
 # dependencies
 .env
+db.json
 /node_modules
 /.pnp
 .pnp.js

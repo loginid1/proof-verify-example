@@ -28,4 +28,6 @@ export const complete = async ({
   });
 };
 
-export default { createUser, init, complete };
+const obj = { createUser, init, complete };
+
+export default obj;

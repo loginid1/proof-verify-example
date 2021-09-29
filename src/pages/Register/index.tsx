@@ -10,17 +10,17 @@ import { PageNames } from "../../enums/";
 import Identity from "../../services/identity";
 import { Form } from "../style";
 
-const Register = () => {
-  const [username, setUsername] = useState("");
+interface Props {
+  username: string;
+  handleUsername: React.ChangeEventHandler;
+}
+
+const Register = ({ username, handleUsername }: Props) => {
   const [iframeUrl, setIframeUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNoSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  };
-
-  const handleUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
   };
 
   /*
@@ -32,7 +32,7 @@ const Register = () => {
       //Create a user
       await Identity.createUser(username);
 
-      handleProof();
+      proofFlow();
     } catch (error) {
       setIsLoading(false);
       console.log(error);
@@ -40,6 +40,10 @@ const Register = () => {
   };
 
   const handleProof = async () => {
+    ("");
+  };
+
+  const proofFlow = async () => {
     try {
       //initalize proof
       const {

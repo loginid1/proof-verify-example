@@ -32,4 +32,6 @@ export const authenticateWithVerifyComplete = async (
   });
 };
 
-export default { authenticateWithVerifyInit, authenticateWithVerifyComplete };
+const obj = { authenticateWithVerifyInit, authenticateWithVerifyComplete };
+
+export default obj;

@@ -7,7 +7,7 @@ import Logo from "../../components/Logo/";
 import Backdrop from "../../components/Backdrop/";
 import { Iframe } from "../../components/Iframe/style";
 import { PageNames } from "../../enums/";
-import Authid from "../../services/authid";
+import Identity from "../../services/identity";
 import { Wrapper, Left, Right, LeftInner, RightInner, Form } from "./style";
 
 export enum Flows {
@@ -39,10 +39,13 @@ const Login = ({ type }: Props) => {
     try {
       setIsLoading(true);
       //Create a user
-      await Authid.createUser(username);
+      await Identity.createUser(username);
 
       //initalize proof
-      const { iframe_url: iframeUrl } = await Authid.init(username);
+      const {
+        iframe_url: iframeUrl,
+        credential_uuid: credentialUUID,
+      } = await Identity.init(username);
 
       setIframeUrl(iframeUrl);
 
@@ -74,6 +77,9 @@ const Login = ({ type }: Props) => {
           { capture: false, signal: controller.signal }
         );
       });
+
+      const result = await Identity.complete({ username, credentialUUID });
+      console.log(result);
 
       setIsLoading(false);
     } catch (error) {
@@ -121,7 +127,6 @@ const Login = ({ type }: Props) => {
             <Button onClick={handleRegisterAndProof}>
               {options.buttonMessage}
             </Button>
-            {/*{type === Flows.REGISTER && <Button>Proof</Button>}*/}
           </Form>
         </RightInner>
       </Right>

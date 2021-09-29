@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
-import { LoginId } from "@loginid/node-sdk";
+import { LoginId, LoginIdManagement } from "@loginid/node-sdk";
 import fetch from "node-fetch";
 import env from "../utils/env";
 
 const loginid = new LoginId(
+  env.loginidBackendClientId,
+  env.privateKey,
+  env.baseUrl
+);
+const management = new LoginIdManagement(
   env.loginidBackendClientId,
   env.privateKey,
   env.baseUrl
@@ -15,35 +20,23 @@ const internalErrorResponse = (res: Response) => {
   return res.status(500).json({ message: "Internal Server Error" });
 };
 
+const loginidError = (res: Response, error: any) => {
+  return res.status(400).json({ message: error.message, code: error.code });
+};
+
 /*
  * Creates a user without credentials.
  */
 export const createUser = async (req: Request, res: Response) => {
   const { username } = req.body;
 
-  const url = `${env.baseUrl}/api/native/manage/users`;
-
-  const serviceToken = loginid.generateServiceToken("users.create");
-
-  const requestPayload = { username };
-
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        ...postHeaders,
-        Authorization: `Bearer ${serviceToken}`,
-        "X-Client-ID": env.loginidBackendClientId,
-      },
-      body: JSON.stringify(requestPayload),
-    });
+    const payload = await management.addUserWithoutCredentials(username);
 
-    const payload = await response.json();
-
-    return res.status(response.status).json(payload);
+    return res.status(200).json(payload);
   } catch (e) {
     console.log(e.message);
-    internalErrorResponse(res);
+    return loginidError(res, e);
   }
 };
 

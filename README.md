@@ -39,6 +39,12 @@ npm install
 
 Project will now be found at [http://localhost:3000](http://localhost:3000).
 
+## How to Run with Docker
+
+1. Create and fill up .env file from above.
+2. Enter `docker-compose up`
+3. Project will now be found at [http://localhost:3000](http://localhost:3000).
+
 ### Features
 
 #### Register with Proof

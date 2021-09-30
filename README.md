@@ -1,4 +1,4 @@
-### proof-verify-example
+# proof-verify-example
 
 ## Requirements
 

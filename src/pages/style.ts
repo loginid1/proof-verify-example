@@ -6,4 +6,8 @@ export const Form = styled.form`
   button:first-of-type {
     margin: 5em 0 1em;
   }
+
+  & button {
+    margin-bottom: 1em;
+  }
 `;

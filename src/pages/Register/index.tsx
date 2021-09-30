@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import WebSDK from "@loginid/sdk";
 import BaseView from "../../components/BaseView/";
 import Title from "../../components/Title/";
 import Input from "../../components/Input/";
@@ -8,14 +10,20 @@ import Backdrop from "../../components/Backdrop/";
 import { Iframe } from "../../components/Iframe/style";
 import { PageNames } from "../../enums/";
 import Identity from "../../services/identity";
+import Token from "../../services/token";
+import User from "../../services/user";
 import { Form } from "../style";
+import env from "../../utils/env";
 
 interface Props {
   username: string;
   handleUsername: React.ChangeEventHandler;
 }
 
+const web = new WebSDK(env.baseUrl, env.loginidWebClientId);
+
 const Register = ({ username, handleUsername }: Props) => {
+  const history = useHistory();
   const [iframeUrl, setIframeUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,8 +47,28 @@ const Register = ({ username, handleUsername }: Props) => {
     }
   };
 
+  const handleRegisterFido2 = async () => {
+    try {
+      setIsLoading(true);
+
+      const serviceToken = await Token.createToken("auth.register");
+
+      const { jwt } = await web.registerWithFido2(username, {
+        authorization_token: serviceToken,
+      });
+
+      await User.registerUser(jwt, username);
+
+      history.push("/home");
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
   const handleProof = async () => {
-    ("");
+    setIsLoading(true);
+    proofFlow();
   };
 
   const proofFlow = async () => {
@@ -85,7 +113,7 @@ const Register = ({ username, handleUsername }: Props) => {
       //finalize proof
       await Identity.complete({ username, credentialUUID });
 
-      setIsLoading(false);
+      history.push("/home");
     } catch (error) {
       setIsLoading(false);
       console.log(error);
@@ -106,7 +134,8 @@ const Register = ({ username, handleUsername }: Props) => {
           Email
         </Input>
         <Link url="/login">Want to login?</Link>
-        <Button onClick={handleRegisterAndProof}>Register</Button>
+        <Button onClick={handleRegisterAndProof}>Register and Proof</Button>
+        <Button onClick={handleRegisterFido2}>Register with FIDO2</Button>
         <Button onClick={handleProof}>Proof</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} />}

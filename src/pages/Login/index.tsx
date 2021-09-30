@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import WebSDK from "@loginid/sdk";
 import BaseView from "../../components/BaseView/";
 import Title from "../../components/Title/";
 import Input from "../../components/Input/";
@@ -12,11 +13,14 @@ import Token from "../../services/token";
 import LoginID from "../../services/loginid";
 import User from "../../services/user";
 import { Form } from "../style";
+import env from "../../utils/env";
 
 interface Props {
   username: string;
   handleUsername: React.ChangeEventHandler;
 }
+
+const web = new WebSDK(env.baseUrl, env.loginidWebClientId);
 
 const Login = ({ username, handleUsername }: Props) => {
   const history = useHistory();
@@ -30,7 +34,7 @@ const Login = ({ username, handleUsername }: Props) => {
   /*
    * Initalize and finalize the verify flow
    */
-  const handleAuthenticate = async () => {
+  const handleVerify = async () => {
     try {
       setIsLoading(true);
 
@@ -85,6 +89,28 @@ const Login = ({ username, handleUsername }: Props) => {
     }
   };
 
+  /*
+   * Authenticate with FIDO2
+   */
+  const handleAuthenticateWithFido2 = async () => {
+    try {
+      setIsLoading(true);
+
+      const serviceToken = await Token.createToken("auth.login");
+
+      const { jwt } = await web.authenticateWithFido2(username, {
+        authorization_token: serviceToken,
+      });
+
+      await User.loginUser(jwt, username);
+
+      history.push("/home");
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+    }
+  };
+
   return (
     <BaseView>
       <Form onSubmit={handleNoSubmit}>
@@ -99,7 +125,8 @@ const Login = ({ username, handleUsername }: Props) => {
           Email
         </Input>
         <Link url="/register">Need to register?</Link>
-        <Button onClick={handleAuthenticate}>Login</Button>
+        <Button onClick={handleVerify}>Login</Button>
+        <Button onClick={handleAuthenticateWithFido2}>Login with FIDO2</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} />}
       <Backdrop display={isLoading} />

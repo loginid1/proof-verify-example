@@ -1,46 +1,64 @@
-# Getting Started with Create React App
+### proof-verify-example
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Requirements
 
-## Available Scripts
+- Nodejs
+- npm
 
-In the project directory, you can run:
+## env
 
-### `yarn start`
+A .env file is needed in the directory with the following:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+REACT_APP_BASE_URL=                  #This is the base url value found on the dashboard.
+REACT_APP_WEB_CLIENT_ID=             #This is a Web client ID.
+BACKEND_CLIENT_ID=                   #This is a Backend client ID with a credential attached to it.
+PRIVATE_KEY=                         #This is the private key associated with <MANAGEMENT_CLIENT_ID>.
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+If `REACT_APP_WEB_CLIENT_ID` is a private application(credential attached), make sure that it uses the same `PRIVATE_KEY` as `MANAGEMENT_CLIENT_ID`.
 
-### `yarn test`
+## How to Run
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+git clone https://github.com/loginid1/proof-verify-example.git
+cd proof-verify-example
+```
 
-### `yarn build`
+### Installing Dependencies
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Running Application
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Makes sure the `.env` file is properly filled out.
+2. Run the back-end server with `npm run server`.
+3. Run the front-end server with `npm start`.
 
-### `yarn eject`
+Project will now be found at [http://localhost:3000](http://localhost:3000).
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Features
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### Register with Proof
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+This will register a user on LoginID's server with no set of credentials and then start the proof flow with the
+same username. This is needed because proof flow needs a registered user to begin with. A user is also registered
+in our local database.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Register with FIDO2
 
-## Learn More
+This will register a user using FIDO2. This point of this is to display that even if a user has a FIDO2 credential, the same user can go through the proof process by clicking the `Proof` button. A user is also registered in our local database.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Proof
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Enters the user into the proof flow. This can be any registered user found in LoginID's database (FIDO2, password, no credentials).
+
+### Login with FIDO2
+
+Authenticate with a FIDO2 user. This is to display even if a user has a FIDO2 credential, the same user can go through the verify process as well.
+
+### Verify
+
+Enters the user into the verify flow that has a `authid` credential associated to it.

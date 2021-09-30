@@ -5,6 +5,18 @@ import env from "../utils/env";
 import { setJWTCookie } from "../middleware/jwt";
 import UsersDB from "../database/Users";
 
+interface EvalResponse {
+  result_url: string;
+  auth_token: string;
+  token_type: string;
+}
+
+interface MetaDataResponse {
+  Data: {
+    Matched: boolean;
+  };
+}
+
 const loginid = new LoginId(
   env.loginidBackendClientId,
   env.privateKey,
@@ -16,7 +28,7 @@ const management = new LoginIdManagement(
   env.baseUrl
 );
 
-const postHeaders = { "Content-Type": "application/json" };
+const commonHeaders = { "Content-Type": "application/json" };
 
 const internalErrorResponse = (res: Response) => {
   return res.status(500).json({ message: "Internal Server Error" });
@@ -34,6 +46,9 @@ export const createUser = async (req: Request, res: Response) => {
 
   try {
     const payload = await management.addUserWithoutCredentials(username);
+
+    const db = new UsersDB();
+    db.createUser(username);
 
     return res.status(200).json(payload);
   } catch (e) {
@@ -70,7 +85,7 @@ export const proofInit = async (req: Request, res: Response) => {
   try {
     const response = await fetch(url, {
       method: "POST",
-      headers: { ...postHeaders, Authorization: `Bearer ${serviceToken}` },
+      headers: { ...commonHeaders, Authorization: `Bearer ${serviceToken}` },
       body: JSON.stringify(requestPayload),
     });
 
@@ -93,33 +108,82 @@ export const proofComplete = async (req: Request, res: Response) => {
     credential_uuid: credentialUUID,
   } = req.body;
 
-  const url = `${env.baseUrl}/api/native/credentials/authid/complete`;
+  /*
+   * Need to first evaluate proof process by comparing the document scan and selfie.
+   * AuthID will provide metadata and statistics about the comparison. This can help
+   * us to detemine if we can complete the proof flow or not.
+   */
+  const evalUrl = `${env.baseUrl}/api/native/credentials/authid/evaluate`;
 
-  const requestPayload = {
+  const evalRequestPayload = {
     client_id: env.loginidBackendClientId,
     username,
     user_id: userId,
     credential_uuid: credentialUUID,
-    activate_credential: true,
   };
 
   try {
+    const evalResponse = await fetch(evalUrl, {
+      method: "POST",
+      headers: commonHeaders,
+      body: JSON.stringify(evalRequestPayload),
+    });
+
+    const evalPayload = await evalResponse.json();
+
+    if (!evalResponse.ok) {
+      return res.status(evalResponse.status).json(evalPayload);
+    }
+
+    const {
+      result_url: resultUrl,
+      auth_token: authToken,
+    } = evalPayload as EvalResponse;
+
+    const metaDataResponse = await fetch(resultUrl, {
+      method: "GET",
+      headers: { ...commonHeaders, Authorization: `Bearer ${authToken}` },
+    });
+
+    /*
+     * Need to get the Matched prop to detemine if document scan and selfie are matched,
+     * according to AuthID standards.
+     */
+    const {
+      Data: { Matched: matched },
+    } = (await metaDataResponse.json()) as MetaDataResponse;
+
+    if (!matched) {
+      return res
+        .status(400)
+        .json({ message: "Failed match document and selfie" });
+    }
+
+    const url = `${env.baseUrl}/api/native/credentials/authid/complete`;
+
+    const requestPayload = {
+      client_id: env.loginidBackendClientId,
+      username,
+      user_id: userId,
+      credential_uuid: credentialUUID,
+      activate_credential: true,
+    };
+
     const response = await fetch(url, {
       method: "POST",
-      headers: postHeaders,
+      headers: commonHeaders,
       body: JSON.stringify(requestPayload),
     });
 
     const payload = await response.json();
 
-    try {
-      if (response.ok) {
-        const db = new UsersDB();
-        const user = db.createUser(username);
-        setJWTCookie(res, user);
-      }
-    } catch (e) {
-      console.log(e.message);
+    /*
+     * If /complete is successful authorize user
+     */
+    if (response.ok) {
+      const db = new UsersDB();
+      const user = db.getUser(username);
+      setJWTCookie(res, user);
     }
 
     return res.status(response.status).json(payload);

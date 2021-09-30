@@ -125,7 +125,7 @@ const Login = ({ username, handleUsername }: Props) => {
           Email
         </Input>
         <Link url="/register">Need to register?</Link>
-        <Button onClick={handleVerify}>Login</Button>
+        <Button onClick={handleVerify}>Verify</Button>
         <Button onClick={handleAuthenticateWithFido2}>Login with FIDO2</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} />}

@@ -47,18 +47,18 @@ This will register a user on LoginID's server with no set of credentials and the
 same username. This is needed because proof flow needs a registered user to begin with. A user is also registered
 in our local database.
 
-### Register with FIDO2
+#### Register with FIDO2
 
 This will register a user using FIDO2. This point of this is to display that even if a user has a FIDO2 credential, the same user can go through the proof process by clicking the `Proof` button. A user is also registered in our local database.
 
-### Proof
+#### Proof
 
 Enters the user into the proof flow. This can be any registered user found in LoginID's database (FIDO2, password, no credentials).
 
-### Login with FIDO2
+#### Login with FIDO2
 
 Authenticate with a FIDO2 user. This is to display even if a user has a FIDO2 credential, the same user can go through the verify process as well.
 
-### Verify
+#### Verify
 
 Enters the user into the verify flow that has a `authid` credential associated to it.

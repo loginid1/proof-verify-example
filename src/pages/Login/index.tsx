@@ -132,7 +132,7 @@ const Login = ({ username, handleUsername }: Props) => {
         <Button onClick={handleVerify}>Verify</Button>
         <Button onClick={handleAuthenticateWithFido2}>Login with FIDO2</Button>
       </Form>
-      {iframeUrl && <Iframe src={iframeUrl} />}
+      {iframeUrl && <Iframe src={iframeUrl} allow="fullscreen *;camera *" />}
       {errorMessage && <Toast>{errorMessage}</Toast>}
       <Backdrop display={isLoading} />
     </BaseView>

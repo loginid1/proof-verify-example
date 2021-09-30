@@ -143,7 +143,7 @@ const Register = ({ username, handleUsername }: Props) => {
         <Button onClick={handleRegisterFido2}>Register with FIDO2</Button>
         <Button onClick={handleProof}>Proof</Button>
       </Form>
-      {iframeUrl && <Iframe src={iframeUrl} />}
+      {iframeUrl && <Iframe src={iframeUrl} allow="fullscreen *;camera *" />}
       {errorMessage && <Toast>{errorMessage}</Toast>}
       <Backdrop display={isLoading} />
     </BaseView>

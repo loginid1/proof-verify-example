@@ -7,6 +7,7 @@ import Input from "../../components/Input/";
 import Link from "../../components/Link/";
 import Button from "../../components/Button/";
 import Backdrop from "../../components/Backdrop/";
+import Toast from "../../components/Toast/";
 import { Iframe } from "../../components/Iframe/style";
 import { PageNames } from "../../enums/";
 import Identity from "../../services/identity";
@@ -26,6 +27,7 @@ const Register = ({ username, handleUsername }: Props) => {
   const history = useHistory();
   const [iframeUrl, setIframeUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleNoSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -41,9 +43,10 @@ const Register = ({ username, handleUsername }: Props) => {
       await Identity.createUser(username);
 
       proofFlow();
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
       console.log(error);
+      setErrorMessage(error.message);
     }
   };
 
@@ -60,9 +63,10 @@ const Register = ({ username, handleUsername }: Props) => {
       await User.registerUser(jwt, username);
 
       history.push("/home");
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       setIsLoading(false);
+      setErrorMessage(error.message);
     }
   };
 
@@ -114,9 +118,10 @@ const Register = ({ username, handleUsername }: Props) => {
       await Identity.complete({ username, credentialUUID });
 
       history.push("/home");
-    } catch (error) {
-      setIsLoading(false);
+    } catch (error: any) {
       console.log(error);
+      setIsLoading(false);
+      setErrorMessage(error.message);
     }
   };
 
@@ -139,6 +144,7 @@ const Register = ({ username, handleUsername }: Props) => {
         <Button onClick={handleProof}>Proof</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} />}
+      {errorMessage && <Toast>{errorMessage}</Toast>}
       <Backdrop display={isLoading} />
     </BaseView>
   );

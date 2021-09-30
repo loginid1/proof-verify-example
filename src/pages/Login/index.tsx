@@ -8,6 +8,7 @@ import Link from "../../components/Link/";
 import Button from "../../components/Button/";
 import Backdrop from "../../components/Backdrop/";
 import { Iframe } from "../../components/Iframe/style";
+import Toast from "../../components/Toast/";
 import { PageNames } from "../../enums/index";
 import Token from "../../services/token";
 import LoginID from "../../services/loginid";
@@ -26,6 +27,7 @@ const Login = ({ username, handleUsername }: Props) => {
   const history = useHistory();
   const [iframeUrl, setIframeUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleNoSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -83,9 +85,10 @@ const Login = ({ username, handleUsername }: Props) => {
 
       //go to home
       history.push("/home");
-    } catch (error) {
-      setIsLoading(false);
+    } catch (error: any) {
       console.log(error);
+      setIsLoading(false);
+      setErrorMessage(error.message);
     }
   };
 
@@ -105,9 +108,10 @@ const Login = ({ username, handleUsername }: Props) => {
       await User.loginUser(jwt, username);
 
       history.push("/home");
-    } catch (error) {
-      setIsLoading(false);
+    } catch (error: any) {
       console.log(error);
+      setIsLoading(false);
+      setErrorMessage(error.message);
     }
   };
 
@@ -129,6 +133,7 @@ const Login = ({ username, handleUsername }: Props) => {
         <Button onClick={handleAuthenticateWithFido2}>Login with FIDO2</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} />}
+      {errorMessage && <Toast>{errorMessage}</Toast>}
       <Backdrop display={isLoading} />
     </BaseView>
   );

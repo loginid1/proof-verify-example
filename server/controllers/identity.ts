@@ -115,6 +115,10 @@ export const proofComplete = async (req: Request, res: Response) => {
    */
   const evalUrl = `${env.baseUrl}/api/native/credentials/authid/evaluate`;
 
+  const evalServiceToken = loginid.generateServiceToken(
+    "credentials.retrieve_sensitive"
+  );
+
   const evalRequestPayload = {
     client_id: env.loginidBackendClientId,
     username,
@@ -125,7 +129,10 @@ export const proofComplete = async (req: Request, res: Response) => {
   try {
     const evalResponse = await fetch(evalUrl, {
       method: "POST",
-      headers: commonHeaders,
+      headers: {
+        ...commonHeaders,
+        Authorization: `Bearer ${evalServiceToken}`,
+      },
       body: JSON.stringify(evalRequestPayload),
     });
 
@@ -161,6 +168,10 @@ export const proofComplete = async (req: Request, res: Response) => {
 
     const url = `${env.baseUrl}/api/native/credentials/authid/complete`;
 
+    const completeServiceToken = loginid.generateServiceToken(
+      "credentials.force_add"
+    );
+
     const requestPayload = {
       client_id: env.loginidBackendClientId,
       username,
@@ -171,7 +182,10 @@ export const proofComplete = async (req: Request, res: Response) => {
 
     const response = await fetch(url, {
       method: "POST",
-      headers: commonHeaders,
+      headers: {
+        ...commonHeaders,
+        Authorization: `Bearer ${completeServiceToken}`,
+      },
       body: JSON.stringify(requestPayload),
     });
 

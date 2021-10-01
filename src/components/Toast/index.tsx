@@ -7,7 +7,7 @@ const Toast: React.FC = ({ children }) => {
     setIsFinished(false);
     setTimeout(() => {
       setIsFinished(true);
-    }, 3000);
+    }, 7000);
   }, [children]);
 
   return <Wrapper finish={isFinished}>{children}</Wrapper>;

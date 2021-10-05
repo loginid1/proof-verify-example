@@ -3,7 +3,6 @@ import { LoginId, LoginIdManagement } from "@loginid/node-sdk";
 import fetch from "node-fetch";
 import env from "../utils/env";
 import { setJWTCookie } from "../middleware/jwt";
-import UsersDB from "../database/Users";
 
 interface EvalResponse {
   result_url: string;
@@ -46,9 +45,6 @@ export const createUser = async (req: Request, res: Response) => {
 
   try {
     const payload = await management.addUserWithoutCredentials(username);
-
-    const db = new UsersDB();
-    db.createUser(username);
 
     return res.status(200).json(payload);
   } catch (e) {
@@ -195,8 +191,10 @@ export const proofComplete = async (req: Request, res: Response) => {
      * If /complete is successful authorize user
      */
     if (response.ok) {
-      const db = new UsersDB();
-      const user = db.getUser(username);
+      const user = {
+        username,
+        id: userId,
+      };
       setJWTCookie(res, user);
     }
 

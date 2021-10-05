@@ -9,7 +9,7 @@ import Button from "../../components/Button/";
 import Backdrop from "../../components/Backdrop/";
 import Toast from "../../components/Toast/";
 import { Iframe } from "../../components/Iframe/style";
-import { PageNames } from "../../enums/";
+import { validPageNames } from "../../enums/";
 import Identity from "../../services/identity";
 import Token from "../../services/token";
 import User from "../../services/user";
@@ -45,7 +45,6 @@ const Register = ({ username, handleUsername }: Props) => {
       proofFlow();
     } catch (error: any) {
       setIsLoading(false);
-      console.log(error);
       setErrorMessage(error.message);
     }
   };
@@ -98,15 +97,13 @@ const Register = ({ username, handleUsername }: Props) => {
               controller.abort();
             } else {
               const { pageName } = event.data;
-              const validPageNames = [
-                PageNames.QA_CODE_PAGE,
-                PageNames.VIDEO_DEVICE_NOT_FOUND,
-              ];
 
-              if (!validPageNames.includes(pageName)) {
-                reject(event.data);
-                setIframeUrl("");
-                controller.abort();
+              if (validPageNames.has(pageName)) {
+                setTimeout(() => {
+                  reject(event.data);
+                  setIframeUrl("");
+                  controller.abort();
+                }, 5000);
               }
             }
           },

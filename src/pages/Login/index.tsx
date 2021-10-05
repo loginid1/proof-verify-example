@@ -9,7 +9,7 @@ import Button from "../../components/Button/";
 import Backdrop from "../../components/Backdrop/";
 import { Iframe } from "../../components/Iframe/style";
 import Toast from "../../components/Toast/";
-import { PageNames } from "../../enums/index";
+import { validPageNames } from "../../enums/index";
 import Token from "../../services/token";
 import LoginID from "../../services/loginid";
 import User from "../../services/user";
@@ -56,18 +56,16 @@ const Login = ({ username, handleUsername }: Props) => {
           "message",
           (event) => {
             const { pageName } = event.data;
-            const validPageNames = [
-              PageNames.QA_CODE_PAGE,
-              PageNames.VIDEO_DEVICE_NOT_FOUND,
-            ];
 
             if (event.data.success) {
               resolve(event.data);
               setIframeUrl("");
-            } else if (!validPageNames.includes(pageName)) {
-              console.log(pageName);
-              reject(event.data);
-              setIframeUrl("");
+            } else if (validPageNames.has(pageName)) {
+              setTimeout(() => {
+                console.log(pageName);
+                reject(event.data);
+                setIframeUrl("");
+              }, 5000);
             }
           },
           { capture: false }

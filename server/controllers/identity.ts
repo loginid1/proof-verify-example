@@ -62,7 +62,7 @@ export const createUser = async (req: Request, res: Response) => {
       for (const credential of credentials) {
         if (credential.status !== STATES.PENDING) {
           return res.status(400).json({
-            error: "Username taken",
+            message: "Username taken",
             code: ERROR_MESSAGES.USERNAME_TAKEN,
           });
         }

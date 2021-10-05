@@ -3,6 +3,8 @@ import { LoginId, LoginIdManagement } from "@loginid/node-sdk";
 import fetch from "node-fetch";
 import env from "../utils/env";
 import { setJWTCookie } from "../middleware/jwt";
+import { ERROR_MESSAGES } from "../enums/errors";
+import { STATES } from "../enums/credentialStates";
 
 interface EvalResponse {
   result_url: string;
@@ -48,8 +50,32 @@ export const createUser = async (req: Request, res: Response) => {
 
     return res.status(200).json(payload);
   } catch (e) {
-    console.log(e.message);
-    return loginidError(res, e);
+    if (e.code !== ERROR_MESSAGES.USERNAME_TAKEN) {
+      console.log(e.message);
+      return loginidError(res, e);
+    }
+
+    try {
+      const id = await management.getUserId(username);
+      const { credentials } = await management.getCredentials(id);
+
+      for (const credential of credentials) {
+        if (credential.status !== STATES.PENDING) {
+          return res.status(400).json({
+            error: "Username taken",
+            code: ERROR_MESSAGES.USERNAME_TAKEN,
+          });
+        }
+      }
+
+      await management.deleteUserById(id);
+      const payload = await management.addUserWithoutCredentials(username);
+
+      return res.status(200).json(payload);
+    } catch (e) {
+      console.log(e.message);
+      return loginidError(res, e);
+    }
   }
 };
 

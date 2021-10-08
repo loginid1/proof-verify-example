@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import WebSDK from "@loginid/sdk";
+//import WebSDK from "@loginid/sdk";
+import WebSDK from "../../utils/WebSDK";
 import BaseView from "../../components/BaseView/";
 import Title from "../../components/Title/";
 import Input from "../../components/Input/";

@@ -19,7 +19,7 @@ app.use("/token", tokenRouter);
 app.use("/identity", identityRouter);
 
 app.use((_, res: Response) => {
-  res.sendFile(path.join(buildDir, "index.html"));
+  return res.sendFile(path.join(buildDir, "index.html"));
 });
 
 app.listen(app.get("port"), () => {

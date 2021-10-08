@@ -146,7 +146,7 @@ export default class WebSDK {
     };
 
     const completeResponse = await fetch(
-      `${this.baseUrl}/api/native/register/fido2/complete`,
+      `${this.baseUrl}/api/native/authenticate/fido2/complete`,
       {
         method: "POST",
         headers: this.commonHeaders,

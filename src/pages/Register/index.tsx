@@ -9,6 +9,8 @@ import Link from "../../components/Link/";
 import Button from "../../components/Button/";
 import Backdrop from "../../components/Backdrop/";
 import Toast from "../../components/Toast/";
+import Modal from "../../components/Modal/";
+import { ModalMessages } from "./messages";
 import { Iframe } from "../../components/Iframe/style";
 import { validPageNames } from "../../enums/";
 import Identity from "../../services/identity";
@@ -28,6 +30,7 @@ const Register = ({ username, handleUsername }: Props) => {
   const history = useHistory();
   const [iframeUrl, setIframeUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleNoSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -43,13 +46,16 @@ const Register = ({ username, handleUsername }: Props) => {
       //Create a user
       await Identity.createUser(username);
 
-      proofFlow();
+      await proofFlow();
     } catch (error: any) {
       setIsLoading(false);
       setErrorMessage(error.message);
     }
   };
 
+  /*
+   * Register a user with a FIDO2 credential
+   */
   const handleRegisterFido2 = async () => {
     try {
       setIsLoading(true);
@@ -73,6 +79,26 @@ const Register = ({ username, handleUsername }: Props) => {
   const handleProof = async () => {
     setIsLoading(true);
     proofFlow();
+  };
+
+  const handleProofAndFido2 = async () => {
+    setIsLoading(true);
+
+    try {
+      //Create a user
+      await Identity.createUser(username);
+
+      //Create proof credential
+      await proofFlow();
+
+      //display modal
+      setModalMessage(ModalMessages.CREATE_FIDO2_CREDENTIAL);
+
+      history.push("/home");
+    } catch (error: any) {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+    }
   };
 
   const proofFlow = async () => {
@@ -138,11 +164,17 @@ const Register = ({ username, handleUsername }: Props) => {
         </Input>
         <Link url="/login">Want to login?</Link>
         <Button onClick={handleRegisterAndProof}>Register and Proof</Button>
-        <Button onClick={handleRegisterFido2}>Register with FIDO2</Button>
+        <Button onClick={handleProofAndFido2}>Proof and FIDO2</Button>
         <Button onClick={handleProof}>Proof</Button>
+        <Button onClick={handleRegisterFido2}>Register with FIDO2</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} allow="fullscreen *;camera *" />}
       {errorMessage && <Toast>{errorMessage}</Toast>}
+      {modalMessage && (
+        <Modal>
+          <div>{modalMessage}</div>
+        </Modal>
+      )}
       <Backdrop display={isLoading} />
     </BaseView>
   );

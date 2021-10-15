@@ -1,7 +1,12 @@
 import express, { Response } from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { tokenRouter, identityRouter, userRouter } from "./routes/";
+import {
+  tokenRouter,
+  identityRouter,
+  userRouter,
+  fido2Router,
+} from "./routes/";
 
 const app = express();
 const buildDir = path.join(__dirname, "..", "build");
@@ -17,6 +22,7 @@ app.use(express.static(buildDir));
 app.use("/user", userRouter);
 app.use("/token", tokenRouter);
 app.use("/identity", identityRouter);
+app.use("/fido2", fido2Router);
 
 app.use((_, res: Response) => {
   return res.sendFile(path.join(buildDir, "index.html"));

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { LoginId, LoginIdManagement } from "@loginid/node-sdk";
+import { LoginIdManagement } from "@loginid/node-sdk";
 import fetch from "node-fetch";
 import env from "../utils/env";
+import { loginidError, internalErrorResponse } from "../utils/errors";
 import { setJWTCookie } from "../middleware/jwt";
 import { ERROR_MESSAGES } from "../enums/errors";
 import { STATES } from "../enums/credentialStates";
@@ -18,11 +19,6 @@ interface MetaDataResponse {
   };
 }
 
-const loginid = new LoginId(
-  env.loginidBackendClientId,
-  env.privateKey,
-  env.baseUrl
-);
 const management = new LoginIdManagement(
   env.loginidBackendClientId,
   env.privateKey,
@@ -30,14 +26,6 @@ const management = new LoginIdManagement(
 );
 
 const commonHeaders = { "Content-Type": "application/json" };
-
-const internalErrorResponse = (res: Response) => {
-  return res.status(500).json({ message: "Internal Server Error" });
-};
-
-const loginidError = (res: Response, error: any) => {
-  return res.status(400).json({ message: error.message, code: error.code });
-};
 
 /*
  * Creates a user without credentials.
@@ -91,7 +79,7 @@ export const proofInit = async (req: Request, res: Response) => {
 
   const url = `${env.baseUrl}/api/native/credentials/authid/init`;
 
-  const serviceToken = loginid.generateServiceToken("credentials.force_add");
+  const serviceToken = management.generateServiceToken("credentials.force_add");
 
   const requestPayload = {
     client_id: env.loginidBackendClientId,
@@ -137,7 +125,7 @@ export const proofComplete = async (req: Request, res: Response) => {
    */
   const evalUrl = `${env.baseUrl}/api/native/credentials/authid/evaluate`;
 
-  const evalServiceToken = loginid.generateServiceToken(
+  const evalServiceToken = management.generateServiceToken(
     "credentials.retrieve_sensitive"
   );
 
@@ -190,7 +178,7 @@ export const proofComplete = async (req: Request, res: Response) => {
 
     const url = `${env.baseUrl}/api/native/credentials/authid/complete`;
 
-    const completeServiceToken = loginid.generateServiceToken(
+    const completeServiceToken = management.generateServiceToken(
       "credentials.force_add"
     );
 

@@ -16,33 +16,7 @@ export default class WebSDK {
     this.clientId = clientId;
   }
 
-  async registerWithFido2(username: string, options: Options) {
-    const { authorization_token: serviceToken } = options;
-    const initPayload = {
-      client_id: this.clientId,
-      username,
-    };
-
-    const initResponse = await fetch(
-      `${this.baseUrl}/api/native/register/fido2/init`,
-      {
-        method: "POST",
-        headers: {
-          ...this.commonHeaders,
-          Authorization: `Bearer ${serviceToken}`,
-        },
-        body: JSON.stringify(initPayload),
-      }
-    );
-
-    const init = await initResponse.json();
-
-    if (!initResponse.ok) {
-      throw init;
-    }
-
-    const { attestation_payload: attestationPayload } = init;
-
+  async addFido2Credential(attestationPayload: any) {
     const {
       credential_uuid: credentialUUID,
       ...publicKey
@@ -65,7 +39,7 @@ export default class WebSDK {
     // Complete the registration flow
     const completePayload = {
       client_id: this.clientId,
-      username,
+      username: attestationPayload.user.name,
       attestation_payload: {
         challenge,
         credential_uuid: credentialUUID,
@@ -76,7 +50,7 @@ export default class WebSDK {
     };
 
     const completeResponse = await fetch(
-      `${this.baseUrl}/api/native/register/fido2/complete`,
+      `${this.baseUrl}/api/native/credentials/fido2/complete`,
       {
         method: "POST",
         headers: this.commonHeaders,

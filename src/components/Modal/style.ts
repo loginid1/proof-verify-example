@@ -13,4 +13,8 @@ export const Wrapper = styled.div`
   text-align: center;
   background: ${(props) => props.theme.colors.white};
   color: ${(props) => props.theme.colors.main};
+
+  & div {
+    margin-bottom: 2em;
+  }
 `;

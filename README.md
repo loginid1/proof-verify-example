@@ -58,19 +58,20 @@ Project will now be found at [http://localhost:3000](http://localhost:3000).
 
 ### Features
 
-#### Register with Proof
+#### Register Proof
 
 This will register a user on LoginID's server with no set of credentials and then start the proof flow with the
-same username. This is needed because proof flow needs a registered user to begin with. A user is also registered
-in our local database.
+same username. This is needed because proof flow needs a registered user to begin with. If proof fails the same
+username may be attempted again.
 
-#### Register with FIDO2
+#### Register Proof and FIDO2
 
-This will register a user using FIDO2. This point of this is to display that even if a user has a FIDO2 credential, the same user can go through the proof process by clicking the `Proof` button. A user is also registered in our local database.
+This will register a user on LoginID's server with no set of credentials and then start the proof flow with the
+same username. This is needed because proof flow needs a registered user to begin with. It will then attempt to
+add a FIDO2 credential to the same username.
 
-#### Proof
-
-Enters the user into the proof flow. This can be any registered user found in LoginID's database (FIDO2, password, no credentials).
+If adding a FIDO2 credential fails, verify login will still work. The user cannot attempt to add a FIDO2 credential
+again. This is possible just not displayed in this demo.
 
 #### Login with FIDO2
 

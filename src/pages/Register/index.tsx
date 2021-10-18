@@ -10,6 +10,7 @@ import Button from "../../components/Button/";
 import Backdrop from "../../components/Backdrop/";
 import Toast from "../../components/Toast/";
 import Modal from "../../components/Modal/";
+import ProofDataComponent, { IProofData } from "../../components/ProofData/";
 import { ModalMessages } from "./messages";
 import { Iframe } from "../../components/Iframe/style";
 import { validPageNames } from "../../enums/";
@@ -28,6 +29,7 @@ const web = new WebSDK(env.baseUrl, env.loginidWebClientId);
 const Register = ({ username, handleUsername }: Props) => {
   const history = useHistory();
   const [iframeUrl, setIframeUrl] = useState("");
+  const [proofData, setProofData] = useState<IProofData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [fido2Error, setFido2Error] = useState("");
@@ -37,60 +39,13 @@ const Register = ({ username, handleUsername }: Props) => {
     event.preventDefault();
   };
 
-  /*
-   * Register a user (no credential) and then initalize and finalize the proof flow
-   */
-  const handleRegisterAndProof = async () => {
-    try {
-      setIsLoading(true);
-      //Create a user
-      await Identity.createUser(username);
-
-      await proofFlow();
-
-      history.push("/home");
-    } catch (error: any) {
-      setIsLoading(false);
-      setErrorMessage(error.message);
-    }
-  };
-
-  const handleProofAndFido2 = async () => {
+  const proofFlow = async () => {
     setIsLoading(true);
 
     try {
       //Create a user
       await Identity.createUser(username);
 
-      //Create proof credential
-      await proofFlow();
-
-      try {
-        //display modal
-        setModalMessage(ModalMessages.CREATE_FIDO2_CREDENTIAL);
-
-        //start fido2 credential without codes
-        const {
-          attestation_payload: attestationPayload,
-        } = await Fido2.forceInit(username);
-
-        //finalize fido2 credential
-        await web.addFido2Credential(attestationPayload);
-
-        history.push("/home");
-      } catch (e) {
-        console.log(e);
-        setFido2Error(ModalMessages.FIDO2_GENERIC_ERROR);
-      }
-    } catch (error: any) {
-      setIsLoading(false);
-      setErrorMessage(error.message);
-      setModalMessage("");
-    }
-  };
-
-  const proofFlow = async () => {
-    try {
       //initalize proof
       const {
         iframe_url: iframeUrl,
@@ -126,12 +81,64 @@ const Register = ({ username, handleUsername }: Props) => {
         );
       });
 
+      const meta: IProofData = await Identity.evaluate({
+        username,
+        credentialUUID,
+      });
+
+      setProofData(meta);
+
+      //wait for modal to end then continue
+      await new Promise((resolve) => {
+        const handler = () => {
+          window.removeEventListener("proceed", handler);
+          resolve(null);
+        };
+        window.addEventListener("proceed", handler);
+      });
+
+      setProofData(null);
+
       //finalize proof
       await Identity.complete({ username, credentialUUID });
     } catch (error: any) {
-      console.log(error);
       setIsLoading(false);
       setErrorMessage(error.message);
+      setModalMessage("");
+    }
+  };
+
+  const handleProof = async () => {
+    await proofFlow();
+
+    history.push("/home");
+  };
+
+  const handleProofAndFido2 = async () => {
+    try {
+      await proofFlow();
+
+      try {
+        //display modal
+        setModalMessage(ModalMessages.CREATE_FIDO2_CREDENTIAL);
+
+        //start fido2 credential without codes
+        const {
+          attestation_payload: attestationPayload,
+        } = await Fido2.forceInit(username);
+
+        //finalize fido2 credential
+        await web.addFido2Credential(attestationPayload);
+
+        history.push("/home");
+      } catch (e) {
+        console.log(e);
+        setFido2Error(ModalMessages.FIDO2_GENERIC_ERROR);
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+      setModalMessage("");
     }
   };
 
@@ -149,9 +156,10 @@ const Register = ({ username, handleUsername }: Props) => {
           Email
         </Input>
         <Link url="/login">Want to login?</Link>
-        <Button onClick={handleRegisterAndProof}>Register Proof</Button>
+        <Button onClick={handleProof}>Register Proof</Button>
         <Button onClick={handleProofAndFido2}>Register Proof and FIDO2</Button>
       </Form>
+      <Backdrop display={isLoading} />
       {iframeUrl && <Iframe src={iframeUrl} allow="fullscreen *;camera *" />}
       {errorMessage && <Toast>{errorMessage}</Toast>}
       {modalMessage && (
@@ -165,7 +173,11 @@ const Register = ({ username, handleUsername }: Props) => {
           <Button onClick={() => history.push("/home")}>Continue</Button>
         </Modal>
       )}
-      <Backdrop display={isLoading} />
+      {proofData && (
+        <Modal>
+          <ProofDataComponent data={proofData} />
+        </Modal>
+      )}
     </BaseView>
   );
 };

@@ -4,7 +4,7 @@ import { StyledInput, Label } from "./style";
 interface Props {
   placeholder: string;
   id: string;
-  value: string;
+  value: string | number;
   onChange: React.ChangeEventHandler;
   isFilled?: boolean;
 }

@@ -109,6 +109,76 @@ export const proofInit = async (req: Request, res: Response) => {
 };
 
 /*
+ * Returns statistics about the proof outcome.
+ */
+export const proofEvaluate = async (req: Request, res: Response) => {
+  const {
+    username,
+    userId: userId,
+    credential_uuid: credentialUUID,
+  } = req.body;
+
+  /*
+   * Need to first evaluate proof process by comparing the document scan and selfie.
+   * AuthID will provide metadata and statistics about the comparison. This can help
+   * us to detemine if we can complete the proof flow or not.
+   */
+  const evalUrl = `${env.baseUrl}/api/native/credentials/authid/evaluate`;
+
+  const evalServiceToken = management.generateServiceToken(
+    "credentials.retrieve_sensitive"
+  );
+
+  const evalRequestPayload = {
+    client_id: env.loginidBackendClientId,
+    username,
+    user_id: userId,
+    credential_uuid: credentialUUID,
+  };
+
+  try {
+    const evalResponse = await fetch(evalUrl, {
+      method: "POST",
+      headers: {
+        ...commonHeaders,
+        Authorization: `Bearer ${evalServiceToken}`,
+      },
+      body: JSON.stringify(evalRequestPayload),
+    });
+
+    const evalPayload = await evalResponse.json();
+
+    if (!evalResponse.ok) {
+      return res.status(evalResponse.status).json(evalPayload);
+    }
+
+    const {
+      result_url: resultUrl,
+      auth_token: authToken,
+    } = evalPayload as EvalResponse;
+
+    const metaDataResponse = await fetch(resultUrl, {
+      method: "GET",
+      headers: { ...commonHeaders, Authorization: `Bearer ${authToken}` },
+    });
+
+    const payload = await metaDataResponse.json();
+
+    if (!metaDataResponse.ok) {
+      console.log(payload);
+      return res
+        .status(400)
+        .json({ message: ERROR_MESSAGES.PROOF_DETAILS_FAIL });
+    }
+
+    return res.status(metaDataResponse.status).json(payload);
+  } catch (e) {
+    console.log(e.message);
+    internalErrorResponse(res);
+  }
+};
+
+/*
  * Complete adding a new AuthID credential.
  */
 export const proofComplete = async (req: Request, res: Response) => {

@@ -5,6 +5,7 @@ declare module "styled-components" {
   export interface DefaultTheme {
     colors: {
       main: string;
+      mainRGB: (alpha: number) => string;
       mainLighter: string;
       white: string;
     };
@@ -14,6 +15,7 @@ declare module "styled-components" {
 const theme = {
   colors: {
     main: "#036ef9",
+    mainRGB: (alpha: number) => `rgb(3, 110, 249, ${alpha})`,
     mainLighter: "#358bfa",
     white: "snow",
   },

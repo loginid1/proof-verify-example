@@ -16,18 +16,36 @@ BACKEND_CLIENT_ID=                   #This is a Backend client ID with a credent
 PRIVATE_KEY=                         #This is the private key associated with <BACKEND_CLIENT_ID>.
 ```
 
-#### NOTE
+**NOTE** If you decide to attach a credential to `REACT_APP_WEB_CLIENT_ID`, make sure that it uses the same `PRIVATE_KEY` as `BACKEND_CLIENT_ID`. In this demo the `REACT_APP_WEB_CLIENT_ID` and `BACKEND_CLIENT_ID` share the same `PRIVATE_KEY`. Although this is entirely optional.
 
-If you decide to attach a credential to `REACT_APP_WEB_CLIENT_ID`, make sure that it uses the same `PRIVATE_KEY` as `BACKEND_CLIENT_ID`. In this demo the `REACT_APP_WEB_CLIENT_ID` and `BACKEND_CLIENT_ID` share the same `PRIVATE_KEY`. Although this is entirely optional.
+You can get your client ids and PRIVATE_KEY from the [https://sandbox-usw1.api.loginid.io](https://sandbox-usw1.api.loginid.io).
 
-Here is an example of how the `.env` file should look like:
+- Create a .env file in the same directory as you application
+- Login or create a new account
+- Select Applications on the left
+- Click Add Application
+- Select Web Application
+- Enter your application name and URL
+- Capture the CLIENT_ID as REACT_APP_WEB_CLIENT_ID and BASE_URL as REACT_APP_BASE_URL
+- Generate a key pair or upload you own
+- Capture the PRIVATE_KEY
+- Select Applications on the left
+- Click Add Application
+- Click 'Backend / API'
+- Enter your application name and enter the same URL from Web Application
+- Capture the CLIENT_ID as BACKEND_CLIENT_ID
+- Attach the credential created from key pair generation/upload to your backend application
+
+Here is an example of how the `.env` file should look like (YOURS WILL BE DIFFERENT):
 
 ```
-REACT_APP_BASE_URL=https://directweb.qa.loginid.io
+REACT_APP_BASE_URL=https://sandbox-usw1.api.loginid.io
 REACT_APP_WEB_CLIENT_ID=am_pUlDE1dnKq11qzIkD_KIzqyoK8t-g1dZnUdwzbGehg7p2Q3R8eLa4rNr_x7mlfMadN5GFKkSef4K2UKsoSQ
 BACKEND_CLIENT_ID=gbxEg41g6WLPX0ggD19fcu6pnD9q25pcUR8_Wd0swhdiIcFbpACEW7j4QAofxe_-Q8tg8KUfd9H0oPsn4cvMLA
 PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AfEGCCqGSM49AwEHBG0wawIBAQQgahNvZS5BKHI1y59p\n5mBfZQ3QM16zRghLfdiCY7KDhI2hRANCAAQyfTeuqPrtqsa2YGsarTkg9fWdq8Ta\nBBmf8PqLBaELtBa7sKE0IEusa0Q+KPSdyeXF3Kii1dYrh2Kf8KQnjJ1v\n-----END PRIVATE KEY-----"
 ```
+
+**NOTE**: The PRIVATE_KEY is wrapped with quotes and contains \n instead of newline characters.
 
 ## How to Run
 

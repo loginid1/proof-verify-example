@@ -102,16 +102,20 @@ const Register = ({ username, handleUsername }: Props) => {
       //finalize proof
       await Identity.complete({ username, credentialUUID });
     } catch (error: any) {
-      setIsLoading(false);
-      setErrorMessage(error.message);
-      setModalMessage("");
+      throw error;
     }
   };
 
   const handleProof = async () => {
-    await proofFlow();
+    try {
+      await proofFlow();
 
-    history.push("/home");
+      history.push("/home");
+    } catch (error: any) {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+      setModalMessage("");
+    }
   };
 
   const handleProofAndFido2 = async () => {

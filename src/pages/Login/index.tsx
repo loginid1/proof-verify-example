@@ -34,6 +34,10 @@ const Login = ({ username, handleUsername }: Props) => {
     event.preventDefault();
   };
 
+  const handleError = () => {
+    setErrorMessage("");
+  };
+
   /*
    * Initalize and finalize the verify flow
    */
@@ -132,7 +136,7 @@ const Login = ({ username, handleUsername }: Props) => {
         <Button onClick={handleAuthenticateWithFido2}>Login with FIDO2</Button>
       </Form>
       {iframeUrl && <Iframe src={iframeUrl} allow="fullscreen *;camera *" />}
-      {errorMessage && <Toast>{errorMessage}</Toast>}
+      {errorMessage && <Toast callback={handleError}>{errorMessage}</Toast>}
       <Backdrop display={isLoading} />
     </BaseView>
   );

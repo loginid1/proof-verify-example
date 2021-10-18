@@ -39,6 +39,10 @@ const Register = ({ username, handleUsername }: Props) => {
     event.preventDefault();
   };
 
+  const handleError = () => {
+    setErrorMessage("");
+  };
+
   const proofFlow = async () => {
     setIsLoading(true);
 
@@ -165,7 +169,7 @@ const Register = ({ username, handleUsername }: Props) => {
       </Form>
       <Backdrop display={isLoading} />
       {iframeUrl && <Iframe src={iframeUrl} allow="fullscreen *;camera *" />}
-      {errorMessage && <Toast>{errorMessage}</Toast>}
+      {errorMessage && <Toast callback={handleError}>{errorMessage}</Toast>}
       {modalMessage && (
         <Modal>
           <div>{modalMessage}</div>

@@ -64,11 +64,13 @@ npm install
 
 1. Makes sure the `.env` file is properly filled out.
 2. Run the back-end server with `npm run server`.
-3. Run the front-end server with `npm start`.
+3. Run the front-end server with `npm run dev`.
 
 Project will now be found at [http://localhost:3000](http://localhost:3000).
 
 ## How to Run with Docker
+
+AA
 
 1. Create and fill up .env file from above.
 2. Enter `docker-compose up`

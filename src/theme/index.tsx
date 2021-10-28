@@ -12,7 +12,7 @@ declare module "styled-components" {
   }
 }
 
-const theme = {
+export const theme = {
   colors: {
     main: "#036ef9",
     mainRGB: (alpha: number) => `rgb(3, 110, 249, ${alpha})`,

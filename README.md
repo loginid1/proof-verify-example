@@ -7,7 +7,7 @@
 
 ## env
 
-A `.env` file is needed in the directory with the following:
+`.env` file is needed in the directory with the following:
 
 ```
 REACT_APP_BASE_URL=                  #This is the base url value found on the dashboard.
@@ -20,7 +20,7 @@ PRIVATE_KEY=                         #This is the private key associated with <B
 
 You can get your client ids and PRIVATE_KEY from the [https://sandbox-usw1.api.loginid.io](https://sandbox-usw1.api.loginid.io).
 
-- Create a .env file in the same directory as you application
+- Create an .env file in the same directory as your application
 - Login or create a new account
 - Select Applications on the left
 - Click Add Application
@@ -42,7 +42,7 @@ Here is an example of how the `.env` file should look like (YOURS WILL BE DIFFER
 REACT_APP_BASE_URL=https://sandbox-usw1.api.loginid.io
 REACT_APP_WEB_CLIENT_ID=am_pUlDE1dnKq11qzIkD_KIzqyoK8t-g1dZnUdwzbGehg7p2Q3R8eLa4rNr_x7mlfMadN5GFKkSef4K2UKsoSQ
 BACKEND_CLIENT_ID=gbxEg41g6WLPX0ggD19fcu6pnD9q25pcUR8_Wd0swhdiIcFbpACEW7j4QAofxe_-Q8tg8KUfd9H0oPsn4cvMLA
-PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AfEGCCqGSM49AwEHBG0wawIBAQQgahNvZS5BKHI1y59p\n5mBfZQ3QM16zRghLfdiCY7KDhI2hRANCAAQyfTeuqPrtqsa2YGsarTkg9fWdq8Ta\nBBmf8PqLBaELtBa7sKE0IEusa0Q+KPSdyeXF3Kii1dYrh2Kf8KQnjJ1v\n-----END PRIVATE KEY-----"
+PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM4..........93Kii1dYrh2Kf8KQnjJ1v\n-----END PRIVATE KEY-----"
 ```
 
 **NOTE**: The PRIVATE_KEY is wrapped with quotes and contains \n instead of newline characters.
@@ -70,21 +70,23 @@ Project will now be found at [http://localhost:3000](http://localhost:3000).
 
 ## How to Run with Docker
 
-AA
-
 1. Create and fill up .env file from above.
 2. Enter `docker-compose up`
 3. Project will now be found at [http://localhost:3000](http://localhost:3000).
 
 ### Features
 
-#### Register Proof
+#### Need to register?
+
+Selecting this link makes two options available:
+
+##### Register Proof
 
 This will register a user on LoginID's server with no set of credentials and then start the proof flow with the
 same username. This is needed because proof flow needs a registered user to begin with. If proof fails the same
 username may be attempted again.
 
-#### Register Proof and FIDO2
+##### Register Proof and FIDO2
 
 This will register a user on LoginID's server with no set of credentials and then start the proof flow with the
 same username. This is needed because proof flow needs a registered user to begin with. It will then attempt to

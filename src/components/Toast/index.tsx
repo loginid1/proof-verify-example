@@ -15,7 +15,7 @@ const Toast: React.FC<Props> = ({ children, callback }) => {
         callback();
       }, 100);
     }, 7000);
-  }, [children]);
+  }, [children, callback]);
 
   return <Wrapper finish={isFinished}>{children}</Wrapper>;
 };

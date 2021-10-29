@@ -11,3 +11,8 @@ export const P = styled.p`
   font-size: 0.7em;
   text-align: center;
 `;
+
+export const Link = styled.a`
+  color: ${(props) => props.theme.colors.main};
+  text-decoration: none;
+`;

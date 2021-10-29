@@ -17,4 +17,14 @@ export const Wrapper = styled.div`
   & button {
     margin-top: 2em;
   }
+
+  @media (max-width: 550px) {
+    width 100%;
+	height: 100%;
+	border-radius: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+  }
 `;

@@ -8,6 +8,7 @@ declare module "styled-components" {
       mainRGB: (alpha: number) => string;
       mainLighter: string;
       white: string;
+      gray: string;
     };
   }
 }
@@ -18,6 +19,7 @@ export const theme = {
     mainRGB: (alpha: number) => `rgb(3, 110, 249, ${alpha})`,
     mainLighter: "#358bfa",
     white: "snow",
+    gray: "lightgray",
   },
   effects: {
     hoverFullColor: `

@@ -5,8 +5,9 @@ import WebSDK from "../../utils/WebSDK";
 import BaseView from "../../components/BaseView/";
 import Title from "../../components/Title/";
 import Input from "../../components/Input/";
-import Link from "../../components/Link/";
+import Link, { Anchor } from "../../components/Link/";
 import Button from "../../components/Button/";
+import CheckMark from "../../components/Checkmark/";
 import Backdrop from "../../components/Backdrop/";
 import Toast from "../../components/Toast/";
 import Modal from "../../components/Modal/";
@@ -16,17 +17,24 @@ import { Iframe } from "../../components/Iframe/style";
 import { validPageNames } from "../../enums/";
 import Identity from "../../services/identity";
 import Fido2 from "../../services/fido2";
-import { Form } from "../style";
+import { Form } from "./style";
 import env from "../../utils/env";
 
 interface Props {
   username: string;
   handleUsername: React.ChangeEventHandler;
+  agreement: boolean;
+  handleAgreement: React.ChangeEventHandler;
 }
 
 const web = new WebSDK(env.baseUrl, env.loginidWebClientId);
 
-const Register = ({ username, handleUsername }: Props) => {
+const Register = ({
+  username,
+  handleUsername,
+  agreement,
+  handleAgreement,
+}: Props) => {
   const history = useHistory();
   const [iframeUrl, setIframeUrl] = useState("");
   const [proofData, setProofData] = useState<IProofData | null>(null);
@@ -164,8 +172,23 @@ const Register = ({ username, handleUsername }: Props) => {
           Email
         </Input>
         <Link url="/login">Want to login?</Link>
-        <Button onClick={handleProof}>Register Proof</Button>
-        <Button onClick={handleProofAndFido2}>Register Proof and FIDO2</Button>
+        <CheckMark
+          id="privacy-statement"
+          onChange={handleAgreement}
+          checked={agreement}
+        >
+          I agree to LoginID{" "}
+          <Anchor url="https://loginid.io/privacy-notice" inline>
+            Privacy
+          </Anchor>{" "}
+          statement
+        </CheckMark>
+        <Button onClick={handleProof} disabled={!agreement}>
+          Register Proof
+        </Button>
+        <Button onClick={handleProofAndFido2} disabled={!agreement}>
+          Register Proof and FIDO2
+        </Button>
       </Form>
       <Backdrop display={isLoading} />
       {iframeUrl && <Iframe src={iframeUrl} allow="fullscreen *;camera *" />}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { useCheckHttps } from "./hooks/";
 import Register from "./pages/Register/";
 import Login from "./pages/Login/";
 import Home from "./pages/Home/";
@@ -9,6 +10,8 @@ import Theme from "./theme/";
 const App = function () {
   const [username, setUsername] = useState("");
   const [agreement, setAgreement] = useState(false);
+
+  useCheckHttps();
 
   const handleUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
